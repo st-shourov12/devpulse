@@ -1,7 +1,6 @@
 import { Pool } from "pg";
 import config from "../config";
 
-
 export const pool = new Pool({
   connectionString: config.connection_string,
   ssl: {
@@ -17,14 +16,25 @@ export const initDB = async () => {
                 name VARCHAR(20),
                 email VARCHAR(20) UNIQUE NOT NULL,
                 password TEXT NOT NULL,
-                role VARCHAR(10) DEFAULT 'contributor',
+                role VARCHAR(15) DEFAULT 'contributor',
                 created_at TIMESTAMP DEFAULT NOW(),
                 updated_at TIMESTAMP DEFAULT NOW()
 
             )
         `);
-
-
+    await pool.query(`
+            CREATE TABLE IF NOT EXISTS issues(
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(20) NOT NULL,
+                description TEXT NOT NULL CHECK (LENGTH(description) >= 20),
+                type VARCHAR(20) CHECK (type IN ('bug', 'feature_request')),
+                status VARCHAR(20) DEFAULT 'open'
+                CHECK (status IN ('open', 'in_progress', 'resolved')),
+                reporter_id INT REFERENCES users(id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT NOW(),
+                updated_at TIMESTAMP DEFAULT NOW()
+            
+            `);
 
     console.log("database connected succcessfully");
     return;

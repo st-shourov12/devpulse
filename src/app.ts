@@ -7,6 +7,7 @@ import express, {
 
 import cors from 'cors'
 import { userRoute } from "./modules/users/user.route";
+import { issueRoute } from "./modules/issues/issue.route";
 
 
 
@@ -34,7 +35,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 
-app.use('/api/users', userRoute);
+app.use('/api', userRoute);
+app.use('/api/issues', issueRoute);
 
 
 
