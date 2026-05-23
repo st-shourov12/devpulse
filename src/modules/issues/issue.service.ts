@@ -1,54 +1,207 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import config from "../../config";
-import { pool } from "../../db"
-import type { Request, Response } from "express"
-// import type { Issue } from "./issue.interface";
+import { pool } from "../../db";
+import type { Request, Response } from "express";
+import sendResponse from "../../utility/sendResponse";
 
-const createIssueIntoDB = async(req: Request, res: Response) => {
-    
-    const {title, description , type} = req.body ; 
+const createIssueIntoDB = async (req: Request, res: Response) => {
+  const { title, description, type } = req.body;
 
-    const token = req.headers.authorization;
-      if (!token) {
-        res.status(401).json({
-          success: false,
-          messsage: "Unauthorized access!",
-        });
-      }
+  const token = req.headers.authorization;
 
-      // 2. Verify token
-      const decoded = jwt.verify(
-        token as string,
-        config.secret as string,
-      ) as JwtPayload;
-      // console.log(decoded)
+  // 2. Verify token
+  const decoded = jwt.verify(
+    token as string,
+    config.secret as string,
+  ) as JwtPayload;
 
-      // 3. Find the user into database
-      const userData = await pool.query(
-        `
-        SELECT * FROM users WHERE id=$1
-        
-    `,
-        [decoded.id],
-      );
-    const user = await pool.query(`
+  // 3. Find the user into database
+
+  const user = await pool.query(
+    `
         SELECT * FROM   users WHERE id=$1
-    `,[ decoded.id])
+    `,
+    [decoded.id],
+  );
 
-    if (user.rows.length === 0) {
-        throw new Error("User does not exist")
-    }
-    const result = await pool.query(`
+  if (user.rows.length === 0) {
+    throw new Error("User does not exist");
+  }
+  const result = await pool.query(
+    `
         INSERT INTO issues(title, description , type, reporter_id) VALUES($1,$2,$3, $4)
         RETURNING *
     `,
-    [title, description , type, decoded.id ]
-    )
-    return result
-}
+    [title, description, type, decoded.id],
+  );
+  return result;
+};
 
+const getAllIsssuesFromDB = async () => {
+  const result = await pool.query(`
+      SELECT * FROM issues
+  `);
+  return result;
+};
 
+const getSingleIssueFromDB = async (
+  id: string,
+  req: Request,
+  res: Response,
+) => {
+  const token = req.headers.authorization;
+
+  // 2. Verify token
+  const decoded = jwt.verify(
+    token as string,
+    config.secret as string,
+  ) as JwtPayload;
+
+  // 3. Find the user into database
+  const userData = await pool.query(
+    `
+        SELECT * FROM users WHERE id=$1
+        
+        `,
+    [decoded.id],
+  );
+
+  const result = await pool.query(
+    `
+            SELECT * FROM issues WHERE id=$1
+        `,
+    [id],
+  );
+
+  const reporterID = result.rows[0].reporter_id;
+
+  const reporterData = await pool.query(
+    `
+        SELECT * FROM users WHERE id=$1
+        
+        `,
+    [reporterID],
+  );
+
+  const userInfo = userData.rows[0];
+  if (userInfo.id === decoded.id || decoded.role === "maintainer") {
+    return {
+      result,
+      reporterData,
+    };
+  } else {
+    sendResponse(res, {
+      statusCode: 403,
+      success: false,
+      message: "Forbidden Access!",
+    });
+  }
+};
+
+const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
+  const { title, description, type, status } = req.body;
+
+  const token = req.headers.authorization;
+
+  // 2. Verify token
+  const decoded = jwt.verify(
+    token as string,
+    config.secret as string,
+  ) as JwtPayload;
+
+  // 3. Find the user into database
+  const userData = await pool.query(
+    `
+        SELECT * FROM users WHERE id=$1
+        
+        `,
+    [decoded.id],
+  );
+
+  const updatedUser = await pool.query(
+    `
+            SELECT * FROM issues WHERE id=$1
+        `,
+    [id],
+  );
+
+  if (
+    userData.rows.length !== 0 &&
+    userData.rows[0].id === updatedUser.rows[0].id
+  ) {
+    const result = await pool.query(
+      `
+            UPDATE  issues 
+            SET 
+            title=COALESCE($1,title), 
+            description=COALESCE($2,description),
+            type= COALESCE($3,type),
+            status=COALESCE($4,status)
+            updated_at= NOW()
+            WHERE  id=$5
+            RETURNING *
+        `,
+      [title, description, type, status, id],
+    );
+    return result;
+  } else if (
+    userData.rows.length !== 0 &&
+    userData.rows[0].role === "maintainer"
+  ) {
+    const result = await pool.query(
+      `
+            UPDATE  issues 
+            SET 
+            title=COALESCE($1,title), 
+            description=COALESCE($2,description),
+            type= COALESCE($3,type),
+            status=COALESCE($4,status)
+            updated_at= NOW()
+            WHERE  id=$5
+            RETURNING *
+        `,
+      [title, description, type, status, id],
+    );
+    return result;
+  } else {
+    sendResponse(res, {
+      statusCode: 403,
+      success: false,
+      message: "Forbidden Access!",
+    });
+  }
+};
+
+const deleteIssuesFromDB = async (id: string, req: Request, res: Response) => {
+  const token = req.headers.authorization;
+
+  // 2. Verify token
+  const decoded = jwt.verify(
+    token as string,
+    config.secret as string,
+  ) as JwtPayload;
+
+  if (decoded.role === "maintainer") {
+    const result = await pool.query(
+      `
+        DELETE FROM issues WHERE id=$1
+    `,
+      [id],
+    );
+    return result;
+  } else {
+    sendResponse(res, {
+      statusCode: 403,
+      success: false,
+      message: "Forbidden Access!",
+    });
+  }
+};
 
 export const issueService = {
-    createIssueIntoDB
-}
+  createIssueIntoDB,
+  getAllIsssuesFromDB,
+  getSingleIssueFromDB,
+  updateIssueFromDB,
+  deleteIssuesFromDB
+};
