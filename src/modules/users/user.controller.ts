@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import sendResponse from "../../utility/sendResponse";
 import { userService } from "./user.service";
+import errorResponse from "../../utility/errorResponse";
 
 const creatUser = async (req: Request, res: Response) => {
   const { name, email, password, created_at, updated_at } = req.body;
@@ -15,15 +16,13 @@ const creatUser = async (req: Request, res: Response) => {
 
       data: result.rows[0],
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+
+    errorResponse(res, error)
+
   }
-};
+  }
+
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -34,14 +33,12 @@ const getAllUsers = async (req: Request, res: Response) => {
       message: "Users Retrive successfully",
       data: result.rows,
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+
+    errorResponse(res, error)
+
   }
+  
 };
 
 const getSingleUser = async (req: Request, res: Response) => {
@@ -62,15 +59,13 @@ const getSingleUser = async (req: Request, res: Response) => {
       message: "Users Retrive successfully",
       data: result.rows[0],
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+
+    errorResponse(res, error)
+
   }
-};
+  }
+
 
 const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -86,18 +81,17 @@ const updateUser = async (req: Request, res: Response) => {
         message: "User Not Found",
       });
     }
-    res.status(200).json({
-      success: true,
+
+    sendResponse(res, {
+      statusCode: 200,
+       success: true,
       message: "User updated successfully",
       data: result.rows[0],
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+
+    errorResponse(res, error)
+
   }
 };
 
@@ -118,15 +112,13 @@ const deleteUser = async (req: Request, res: Response) => {
       success: true,
       message: "User deleted successfully",
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+
+    errorResponse(res, error)
+
   }
-};
+}
+
 
 export const userController = {
   creatUser,

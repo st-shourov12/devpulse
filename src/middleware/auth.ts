@@ -6,7 +6,7 @@ import config from "../config";
 
 dotenv.config();
 
-export const auth = (...roles: any) => {
+export const auth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
 

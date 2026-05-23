@@ -3,6 +3,7 @@ import config from "../../config";
 import { pool } from "../../db";
 import type { Request, Response } from "express";
 import sendResponse from "../../utility/sendResponse";
+import type { IQUery } from "./issue.interface";
 
 const createIssueIntoDB = async (req: Request, res: Response) => {
   const { title, description, type } = req.body;
@@ -37,32 +38,31 @@ const createIssueIntoDB = async (req: Request, res: Response) => {
   return result;
 };
 
-const getAllIssuesFromDB = async (query: any) => {
+const getAllIssuesFromDB = async (query: IQUery) => {
 
   const { sort = "newest", type, status } = query;
 
   let sql = `SELECT * FROM issues`;
   const conditions: string[] = [];
-  const values: any[] = [];
+  const values: string[] = [];
 
-  // filtering by type
   if (type) {
     values.push(type);
     conditions.push(`type = $${values.length}`);
   }
 
-  // filtering by status
+
   if (status) {
     values.push(status);
     conditions.push(`status = $${values.length}`);
   }
 
-  // add WHERE
+
   if (conditions.length > 0) {
     sql += ` WHERE ` + conditions.join(" AND ");
   }
 
-  // sorting
+
   if (sort === "oldest") {
     sql += ` ORDER BY created_at ASC`;
   } else {
@@ -73,11 +73,17 @@ const getAllIssuesFromDB = async (query: any) => {
 
   return result;
 };
+
+
+
+
+
 const getSingleIssueFromDB = async (
   id: string,
   req: Request,
   res: Response,
 ) => {
+    // 1. Get token
   const token = req.headers.authorization;
 
   // 2. Verify token
@@ -129,7 +135,7 @@ const getSingleIssueFromDB = async (
 
 const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
   const { title, description, type, status } = req.body;
-
+    // 1. get toket
   const token = req.headers.authorization;
 
   // 2. Verify token

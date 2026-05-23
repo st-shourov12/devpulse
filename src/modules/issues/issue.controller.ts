@@ -2,10 +2,11 @@ import type { Request, Response } from "express";
 
 import { issueService } from "./issue.service";
 import sendResponse from "../../utility/sendResponse";
+import errorResponse from "../../utility/errorResponse";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
-    // const request = [req.body, req.headers]
+
     const result = await issueService.createIssueIntoDB(req, res);
 
     sendResponse(res, {
@@ -15,19 +16,13 @@ const createIssue = async (req: Request, res: Response) => {
 
       data: result.rows[0],
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+    errorResponse(res, error)
   }
 };
 
 const getAllIsssue = async (req: Request, res: Response) => {
   try {
-
     const result = await issueService.getAllIssuesFromDB(req.query);
 
     sendResponse(res, {
@@ -36,16 +31,8 @@ const getAllIsssue = async (req: Request, res: Response) => {
       message: "Issues retrieved successfully",
       data: result.rows,
     });
-
   } catch (error: unknown) {
-
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error instanceof Error ? error.message : "Something went wrong",
-      error,
-    });
-
+    errorResponse(res, error)
   }
 };
 
@@ -86,13 +73,8 @@ const getSingleIssues = async (req: Request, res: Response) => {
 
       data: issueData,
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+    errorResponse(res, error)
   }
 };
 
@@ -116,13 +98,8 @@ const updateIssue = async (req: Request, res: Response) => {
       message: "Issue updated successfully",
       data: result?.rows[0],
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+    errorResponse(res, error)
   }
 };
 
@@ -143,19 +120,14 @@ const deleteIssues = async (req: Request, res: Response) => {
         message: "Issues Not Found",
       });
     }
-    
+
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issue deleted successfully",
     });
-  } catch (error: any) {
-    sendResponse(res, {
-      statusCode: 500,
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (error: unknown) {
+    errorResponse(res, error)
   }
 };
 

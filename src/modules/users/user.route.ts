@@ -9,11 +9,11 @@ router.post("/auth/signup", userController.creatUser)
 
 router.get("/users" ,auth(URole.contributor, URole.maintainer), userController.getAllUsers)
 
-router.get("/users/:id" , userController.getSingleUser);
+router.get("/users/:id" ,auth(URole.contributor, URole.maintainer), userController.getSingleUser);
 
-router.put("/users/:id", userController.updateUser);
+router.put("/users/:id",auth(URole.maintainer), userController.updateUser);
 
-router.delete("/users/:id", userController.deleteUser)
+router.delete("/users/:id", auth(URole.maintainer), userController.deleteUser)
 
 
 export const userRoute = router

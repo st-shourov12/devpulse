@@ -10,7 +10,9 @@ import { userRoute } from "./modules/users/user.route";
 import { issueRoute } from "./modules/issues/issue.route";
 import { authRoute } from "./modules/auth/auth.route";
 import { logger } from "./middleware/logger";
-import globalErrorHandler from "./middleware/globalError";
+import { globalError } from "./middleware/globalError";
+
+
 
 
 
@@ -45,7 +47,7 @@ app.use('/api/auth', authRoute)
 
 
 
-app.use(globalErrorHandler);
+app.use(globalError);
 
 
 
