@@ -6,7 +6,7 @@
 
 ## 🌐 Live URL
 
-**Base URL:** `https://your-deployment-url.vercel.app`
+**Base URL:** `https://devpulse-express.vercel.app/`
 
 > *(Replace with your actual deployment URL after deploying to Vercel / Render / Railway)*
 

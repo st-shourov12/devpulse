@@ -1,18 +1,48 @@
 
-Method -> GET ; Time -> 1779539114747 ; URL -> /api/issues/1
+Method -> POST ; Time -> 1779552048017 ; URL -> /api/auth/signup
 
-Method -> GET ; Time -> 1779539125260 ; URL -> /api/issues
+Method -> POST ; Time -> 1779553085161 ; URL -> /api/auth/login
 
-Method -> GET ; Time -> 1779539213748 ; URL -> /api/issues?sort=newest
+Method -> POST ; Time -> 1779553172545 ; URL -> /api/auth/login
 
-Method -> POST ; Time -> 1779540201206 ; URL -> /api/issues
+Method -> GET ; Time -> 1779553220144 ; URL -> /api/users
 
-Method -> POST ; Time -> 1779540219007 ; URL -> /api/issues
+Method -> GET ; Time -> 1779553260038 ; URL -> /api/users
 
-Method -> GET ; Time -> 1779544458285 ; URL -> /api/issues
+Method -> GET ; Time -> 1779553268406 ; URL -> /api/users/1
 
-Method -> GET ; Time -> 1779545242121 ; URL -> /api/issues
+Method -> POST ; Time -> 1779553287122 ; URL -> /api/issues
 
-Method -> GET ; Time -> 1779545244966 ; URL -> /api/issues
+Method -> PUT ; Time -> 1779553447477 ; URL -> /api/issues/1
 
-Method -> GET ; Time -> 1779545331924 ; URL -> /api/issues
+Method -> PUT ; Time -> 1779553469782 ; URL -> /api/issues/1
+
+Method -> PUT ; Time -> 1779553482951 ; URL -> /api/issues/1
+
+Method -> POST ; Time -> 1779553578941 ; URL -> /api/issues
+
+Method -> DELETE ; Time -> 1779553599696 ; URL -> /api/issues/2
+
+Method -> GET ; Time -> 1779553617642 ; URL -> /api/issues/1
+
+Method -> POST ; Time -> 1779553842464 ; URL -> /api/auth/signup
+
+Method -> POST ; Time -> 1779553873598 ; URL -> /api/auth/login
+
+Method -> GET ; Time -> 1779553915885 ; URL -> /api/issues/1
+
+Method -> PUT ; Time -> 1779553977010 ; URL -> /api/issues/1
+
+Method -> POST ; Time -> 1779553994907 ; URL -> /api/issues/1
+
+Method -> POST ; Time -> 1779554004615 ; URL -> /api/issues
+
+Method -> GET ; Time -> 1779554070976 ; URL -> /api/issues/3
+
+Method -> DELETE ; Time -> 1779554093810 ; URL -> /api/issues/3
+
+Method -> DELETE ; Time -> 1779554237034 ; URL -> /api/issues/3
+
+Method -> PUT ; Time -> 1779554261229 ; URL -> /api/issues/1
+
+Method -> PUT ; Time -> 1779554267570 ; URL -> /api/issues/3

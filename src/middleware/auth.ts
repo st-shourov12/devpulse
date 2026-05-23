@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
-import { pool } from "../db";
+// import { pool } from "../db";
 import config from "../config";
 import dbQuery from "../utility/sqlPool";
+import errorResponse from "../utility/errorResponse";
 
 dotenv.config();
 
@@ -39,7 +40,7 @@ export const auth = (...roles: string[]) => {
 
       const user = userData.rows[0];
 
-      console.log("authuser",user);
+      // console.log("authuser",user);
 
       if (userData.rows.length === 0) {
         res.status(404).json({
@@ -52,14 +53,14 @@ export const auth = (...roles: string[]) => {
       if (roles.length && !roles.includes(user.role)) {
         res.status(403).json({
           success: false,
-          messsage: "Forbidden Access, role not found !!!",
+          messsage: "Forbidden Access!",
         });
       }
 
 
       next();
-    } catch (error) {
-        next(error)
-    }
+    } catch (error: unknown) {
+    errorResponse(res, error);
+  }
   };
 };

@@ -4,7 +4,7 @@ import errorResponse from "../../utility/errorResponse";
 
 const loginUser = async (req: Request, res: Response) => {
   try {
-    const result = await authService.loginUserIntoDB(req.body);
+    const result = await authService.loginUserIntoDB(req.body , req, res);
 
     const { refreshToken, user, accessToken } = result;
     res.cookie("refreshToken", refreshToken, {
@@ -15,7 +15,7 @@ const loginUser = async (req: Request, res: Response) => {
 
     delete user.password;
     const resData = {
-      token: result.accessToken,
+      token: accessToken,
       user: user,
     };
 

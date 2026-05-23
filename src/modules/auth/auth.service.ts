@@ -1,14 +1,16 @@
 import bcrypt from "bcryptjs";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import { pool } from "../../db";
+// import { pool } from "../../db";
 import config from "../../config";
 import dbQuery from "../../utility/sqlPool";
+import type { Request, Response } from "express";
+import sendResponse from "../../utility/sendResponse";
 
 
 const loginUserIntoDB = async (payload: {
   email: string;
   password: string;
-}) => {
+}, req: Request, res: Response) => {
   const { email, password } = payload;
 
   const userData = await  dbQuery(
@@ -20,15 +22,27 @@ const loginUserIntoDB = async (payload: {
   
 
   if (userData.rows.length === 0) {
-    throw new Error("Invalid Cridential!");
+    
+    
+      sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "Invalid Cridentials",
+      });
+    
   }
   const user = userData.rows[0];
 
   const matchPassword = await bcrypt.compare(password, user.password);
+
   if (!matchPassword) {
-    throw new Error("Wrong Password!");
+    sendResponse(res, {
+        statusCode: 401,
+        success: false,
+        message: "Password does not match",
+      });
   }
-  // console.log(matchPassword);
+
 
   // generate token
 
@@ -84,7 +98,7 @@ const generateRefreshToken = async (token: string) => {
 
     const user = userData.rows[0];
 
-    console.log(user);
+    // console.log(user);
 
     if (userData.rows.length === 0) {
       throw new Error("User Not Found");
