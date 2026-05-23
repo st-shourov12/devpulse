@@ -37,13 +37,42 @@ const createIssueIntoDB = async (req: Request, res: Response) => {
   return result;
 };
 
-const getAllIsssuesFromDB = async () => {
-  const result = await pool.query(`
-      SELECT * FROM issues
-  `);
+const getAllIssuesFromDB = async (query: any) => {
+
+  const { sort = "newest", type, status } = query;
+
+  let sql = `SELECT * FROM issues`;
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  // filtering by type
+  if (type) {
+    values.push(type);
+    conditions.push(`type = $${values.length}`);
+  }
+
+  // filtering by status
+  if (status) {
+    values.push(status);
+    conditions.push(`status = $${values.length}`);
+  }
+
+  // add WHERE
+  if (conditions.length > 0) {
+    sql += ` WHERE ` + conditions.join(" AND ");
+  }
+
+  // sorting
+  if (sort === "oldest") {
+    sql += ` ORDER BY created_at ASC`;
+  } else {
+    sql += ` ORDER BY created_at DESC`;
+  }
+
+  const result = await pool.query(sql, values);
+
   return result;
 };
-
 const getSingleIssueFromDB = async (
   id: string,
   req: Request,
@@ -118,7 +147,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
     [decoded.id],
   );
 
-  const updatedUser = await pool.query(
+  const updatedIssue = await pool.query(
     `
             SELECT * FROM issues WHERE id=$1
         `,
@@ -127,7 +156,9 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
 
   if (
     userData.rows.length !== 0 &&
-    userData.rows[0].id === updatedUser.rows[0].id
+    userData.rows[0].id === updatedIssue.rows[0].reporter_id &&
+    updatedIssue.rows[0].status === "open" && 
+    userData.rows[0].role === "contributor"
   ) {
     const result = await pool.query(
       `
@@ -136,7 +167,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
             title=COALESCE($1,title), 
             description=COALESCE($2,description),
             type= COALESCE($3,type),
-            status=COALESCE($4,status)
+            status=COALESCE($4,status),
             updated_at= NOW()
             WHERE  id=$5
             RETURNING *
@@ -155,7 +186,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
             title=COALESCE($1,title), 
             description=COALESCE($2,description),
             type= COALESCE($3,type),
-            status=COALESCE($4,status)
+            status=COALESCE($4,status),
             updated_at= NOW()
             WHERE  id=$5
             RETURNING *
@@ -200,7 +231,7 @@ const deleteIssuesFromDB = async (id: string, req: Request, res: Response) => {
 
 export const issueService = {
   createIssueIntoDB,
-  getAllIsssuesFromDB,
+  getAllIssuesFromDB,
   getSingleIssueFromDB,
   updateIssueFromDB,
   deleteIssuesFromDB

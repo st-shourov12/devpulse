@@ -27,20 +27,25 @@ const createIssue = async (req: Request, res: Response) => {
 
 const getAllIsssue = async (req: Request, res: Response) => {
   try {
-    const result = await issueService.getAllIsssuesFromDB();
+
+    const result = await issueService.getAllIssuesFromDB(req.query);
+
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Users Retrive successfully",
+      message: "Issues retrieved successfully",
       data: result.rows,
     });
-  } catch (error: any) {
+
+  } catch (error: unknown) {
+
     sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: error.message,
-      error: error,
+      message: error instanceof Error ? error.message : "Something went wrong",
+      error,
     });
+
   }
 };
 
@@ -101,7 +106,7 @@ const updateIssue = async (req: Request, res: Response) => {
       sendResponse(res, {
         statusCode: 404,
         success: false,
-        message: "User Not Found",
+        message: "Issue Not Found",
       });
     }
 
@@ -138,10 +143,7 @@ const deleteIssues = async (req: Request, res: Response) => {
         message: "Issues Not Found",
       });
     }
-    res.status(204).json({
-      success: true,
-      message: "Issue deleted successfully",
-    });
+    
     sendResponse(res, {
       statusCode: 200,
       success: true,

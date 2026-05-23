@@ -10,7 +10,7 @@ export const auth = (...roles: any) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
 
-        // console.log(roles)
+
       // 1. Check the token
       const token = req.headers.authorization;
       if (!token) {
@@ -25,7 +25,7 @@ export const auth = (...roles: any) => {
         token as string,
         config.secret as string,
       ) as JwtPayload;
-      // console.log(decoded)
+
 
       // 3. Find the user into database
       const userData = await pool.query(
@@ -46,15 +46,7 @@ export const auth = (...roles: any) => {
           messsage: "User not found !!!",
         });
       }
-      // 4. if the user active or not
 
-      // const is_authorized = roles.includes(decoded.roles)
-      // if (!is_authorized) {
-      //   res.status(403).json({
-      //     success: false,
-      //     messsage: "Forbidden Access !!!",
-      //   });  
-      // }
 
       if (roles.length && !roles.includes(user.role)) {
         res.status(403).json({
@@ -64,7 +56,6 @@ export const auth = (...roles: any) => {
       }
 
 
-    //   req.user = decoded;
       next();
     } catch (error) {
         next(error)

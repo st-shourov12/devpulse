@@ -9,6 +9,7 @@ import cors from 'cors'
 import { userRoute } from "./modules/users/user.route";
 import { issueRoute } from "./modules/issues/issue.route";
 import { authRoute } from "./modules/auth/auth.route";
+import { logger } from "./middleware/logger";
 
 
 
@@ -18,6 +19,7 @@ const app: Application = express();
 app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
+app.use(logger);
 
 
 const corsOptions = {
