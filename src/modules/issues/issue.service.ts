@@ -174,7 +174,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
             title=COALESCE($1,title), 
             description=COALESCE($2,description),
             type= COALESCE($3,type),
-            status=COALESCE($4,status),
+            status=COALESCE($4, 'in_progress'),
             updated_at= NOW()
             WHERE  id=$5
             RETURNING *
@@ -193,7 +193,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
             title=COALESCE($1,title), 
             description=COALESCE($2,description),
             type= COALESCE($3,type),
-            status=COALESCE($4,status),
+            status=COALESCE($4, 'in_progress'),
             updated_at= NOW()
             WHERE  id=$5
             RETURNING *
