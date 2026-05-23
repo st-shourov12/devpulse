@@ -36,18 +36,19 @@ const getSingleUserFromDB = async (id : string) =>{
 
 const updateUserFromDB = async (payload : IUser, id : string) => {
 
-  const {name, password} = payload
+  const {name, password, role} = payload
   const result = await pool.query(
         `
             UPDATE users 
             SET 
             name=COALESCE($1,name), 
-            password=COALESCE($2,password), 
+            password=COALESCE($2,password),
+            role= COALESCE($3,role),
             updated_at= NOW()
-            WHERE  id=$3
+            WHERE  id=$4
             RETURNING *
         `,
-      [name, password, id],
+      [name, password, role, id],
     );
     return result
 }

@@ -1,0 +1,2 @@
+// type Trole  = "maintainer" | "contributor";
+

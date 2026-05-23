@@ -8,6 +8,7 @@ import express, {
 import cors from 'cors'
 import { userRoute } from "./modules/users/user.route";
 import { issueRoute } from "./modules/issues/issue.route";
+import { authRoute } from "./modules/auth/auth.route";
 
 
 
@@ -37,6 +38,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use('/api', userRoute);
 app.use('/api/issues', issueRoute);
+app.use('/api/auth', authRoute)
 
 
 

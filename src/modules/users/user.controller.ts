@@ -74,7 +74,7 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, password, updated_at } = req.body;
+  const { name, password, role, updated_at } = req.body;
 
   try {
     const result = await userService.updateUserFromDB(req.body, id as string);
