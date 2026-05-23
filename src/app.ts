@@ -10,6 +10,7 @@ import { userRoute } from "./modules/users/user.route";
 import { issueRoute } from "./modules/issues/issue.route";
 import { authRoute } from "./modules/auth/auth.route";
 import { logger } from "./middleware/logger";
+import globalErrorHandler from "./middleware/globalError";
 
 
 
@@ -41,6 +42,10 @@ app.get("/", (req: Request, res: Response) => {
 app.use('/api', userRoute);
 app.use('/api/issues', issueRoute);
 app.use('/api/auth', authRoute)
+
+
+
+app.use(globalErrorHandler);
 
 
 
