@@ -312,8 +312,8 @@ devpulse/
 
 ## 🚀 Deployment
 
-- **Backend:** [Vercel](https://vercel.com) / [Render](https://render.com) / [Railway](https://railway.app)
-- **Database:** [NeonDB](https://neon.tech) / [Supabase](https://supabase.com) / [ElephantSQL](https://www.elephantsql.com)
+- **Backend:** [Vercel](https://vercel.com) 
+- **Database:** [NeonDB](https://neon.tech) 
 
 Ensure the following environment variables are set in your deployment platform:
 - `CONNECTIONSTRING`
@@ -331,4 +331,4 @@ Ensure the following environment variables are set in your deployment platform:
 
 ## 📄 License
 
-This project is for educational purposes as part of the Apollo Level-2 Web Development course — Batch 7, Assignment 2.
+This project is for educational purposes as part of the PH Next Level Web Development course — Batch 7, Assignment 2.

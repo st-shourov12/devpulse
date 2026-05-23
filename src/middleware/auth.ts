@@ -3,6 +3,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 import { pool } from "../db";
 import config from "../config";
+import dbQuery from "../utility/sqlPool";
 
 dotenv.config();
 
@@ -28,7 +29,7 @@ export const auth = (...roles: string[]) => {
 
 
       // 3. Find the user into database
-      const userData = await pool.query(
+      const userData = await dbQuery(
         `
         SELECT * FROM users WHERE id=$1
         

@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { pool } from "../../db";
 import config from "../../config";
+import dbQuery from "../../utility/sqlPool";
 
 
 const loginUserIntoDB = async (payload: {
@@ -10,7 +11,7 @@ const loginUserIntoDB = async (payload: {
 }) => {
   const { email, password } = payload;
 
-  const userData = await pool.query(
+  const userData = await  dbQuery(
     `
         SELECT * FROM users WHERE email=$1
     `,
@@ -72,7 +73,7 @@ const generateRefreshToken = async (token: string) => {
 
 
     // 3. Find the user into database
-    const userData = await pool.query(
+    const userData = await  dbQuery(
       `
             SELECT * FROM users WHERE email=$1
             

@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
-import { pool } from "../../db";
+// import { pool } from "../../db";
 import type { IUser } from "./user.interface";
+import dbQuery from "../../utility/sqlPool";
 
 const createUserIntoDB = async (payload: IUser) => {
   const { name, email, password,  role } = payload;
 
   const hashPassword = await bcrypt.hash(password, 10)
-  const result = await pool.query(
+  const result = await dbQuery(
     `
         INSERT INTO users(name, email, password, role) VALUES($1,$2,$3, COALESCE($4, 'contributor'))
         RETURNING *
@@ -18,14 +19,14 @@ const createUserIntoDB = async (payload: IUser) => {
 };
 
 const getAllUsersFromDB = async () => {
-  const result = await pool.query(`
+  const result = await dbQuery(`
       SELECT * FROM users
   `);
   return result
 };
 
 const getSingleUserFromDB = async (id : string) =>{
-  const result = await pool.query(
+  const result = await dbQuery(
       `
             SELECT * FROM users WHERE id=$1
         `,
@@ -37,7 +38,7 @@ const getSingleUserFromDB = async (id : string) =>{
 const updateUserFromDB = async (payload : IUser, id : string) => {
 
   const {name, password, role} = payload
-  const result = await pool.query(
+  const result = await dbQuery(
         `
             UPDATE users 
             SET 
@@ -54,7 +55,7 @@ const updateUserFromDB = async (payload : IUser, id : string) => {
 }
 
 const deleteUserFromDB = async (id : string) => {
-  const result = await pool.query(`
+  const result = await dbQuery(`
         DELETE FROM users WHERE id=$1
     `,[id])
     return result

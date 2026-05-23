@@ -8,3 +8,11 @@ Method -> GET ; Time -> 1779539213748 ; URL -> /api/issues?sort=newest
 Method -> POST ; Time -> 1779540201206 ; URL -> /api/issues
 
 Method -> POST ; Time -> 1779540219007 ; URL -> /api/issues
+
+Method -> GET ; Time -> 1779544458285 ; URL -> /api/issues
+
+Method -> GET ; Time -> 1779545242121 ; URL -> /api/issues
+
+Method -> GET ; Time -> 1779545244966 ; URL -> /api/issues
+
+Method -> GET ; Time -> 1779545331924 ; URL -> /api/issues

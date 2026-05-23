@@ -3,10 +3,11 @@ import type { Request, Response } from "express";
 import { issueService } from "./issue.service";
 import sendResponse from "../../utility/sendResponse";
 import errorResponse from "../../utility/errorResponse";
+// import { pool } from "../../db";
+import dbQuery from "../../utility/sqlPool";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
-
     const result = await issueService.createIssueIntoDB(req, res);
 
     sendResponse(res, {
@@ -17,7 +18,7 @@ const createIssue = async (req: Request, res: Response) => {
       data: result.rows[0],
     });
   } catch (error: unknown) {
-    errorResponse(res, error)
+    errorResponse(res, error);
   }
 };
 
@@ -25,14 +26,40 @@ const getAllIsssue = async (req: Request, res: Response) => {
   try {
     const result = await issueService.getAllIssuesFromDB(req.query);
 
+    const rowResult = await Promise.all(
+      result.rows.map(async (i) => {
+        const reporterResult = await dbQuery(
+          `
+        SELECT id, name, role
+        FROM users
+        WHERE id = $1
+      `,
+          [i.reporter_id],
+        );
+
+        return {
+          id: i.id,
+          title: i.title,
+          description: i.description,
+          type: i.type,
+          status: i.status,
+
+          reporter: reporterResult.rows[0],
+
+          created_at: i.created_at,
+          updated_at: i.updated_at,
+        };
+      }),
+    );
+
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Issues retrieved successfully",
-      data: result.rows,
+      data: rowResult
     });
   } catch (error: unknown) {
-    errorResponse(res, error)
+    errorResponse(res, error);
   }
 };
 
@@ -74,7 +101,7 @@ const getSingleIssues = async (req: Request, res: Response) => {
       data: issueData,
     });
   } catch (error: unknown) {
-    errorResponse(res, error)
+    errorResponse(res, error);
   }
 };
 
@@ -99,7 +126,7 @@ const updateIssue = async (req: Request, res: Response) => {
       data: result?.rows[0],
     });
   } catch (error: unknown) {
-    errorResponse(res, error)
+    errorResponse(res, error);
   }
 };
 
@@ -127,7 +154,7 @@ const deleteIssues = async (req: Request, res: Response) => {
       message: "Issue deleted successfully",
     });
   } catch (error: unknown) {
-    errorResponse(res, error)
+    errorResponse(res, error);
   }
 };
 

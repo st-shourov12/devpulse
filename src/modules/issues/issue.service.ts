@@ -4,6 +4,7 @@ import { pool } from "../../db";
 import type { Request, Response } from "express";
 import sendResponse from "../../utility/sendResponse";
 import type { IQUery } from "./issue.interface";
+import dbQuery from "../../utility/sqlPool";
 
 const createIssueIntoDB = async (req: Request, res: Response) => {
   const { title, description, type } = req.body;
@@ -18,7 +19,7 @@ const createIssueIntoDB = async (req: Request, res: Response) => {
 
   // 3. Find the user into database
 
-  const user = await pool.query(
+  const user = await dbQuery(
     `
         SELECT * FROM   users WHERE id=$1
     `,
@@ -28,7 +29,7 @@ const createIssueIntoDB = async (req: Request, res: Response) => {
   if (user.rows.length === 0) {
     throw new Error("User does not exist");
   }
-  const result = await pool.query(
+  const result = await  dbQuery(
     `
         INSERT INTO issues(title, description , type, reporter_id) VALUES($1,$2,$3, $4)
         RETURNING *
@@ -69,7 +70,7 @@ const getAllIssuesFromDB = async (query: IQUery) => {
     sql += ` ORDER BY created_at DESC`;
   }
 
-  const result = await pool.query(sql, values);
+  const result = await dbQuery(sql, values);
 
   return result;
 };
@@ -93,7 +94,7 @@ const getSingleIssueFromDB = async (
   ) as JwtPayload;
 
   // 3. Find the user into database
-  const userData = await pool.query(
+  const userData = await dbQuery(
     `
         SELECT * FROM users WHERE id=$1
         
@@ -101,7 +102,7 @@ const getSingleIssueFromDB = async (
     [decoded.id],
   );
 
-  const result = await pool.query(
+  const result = await dbQuery(
     `
             SELECT * FROM issues WHERE id=$1
         `,
@@ -110,7 +111,7 @@ const getSingleIssueFromDB = async (
 
   const reporterID = result.rows[0].reporter_id;
 
-  const reporterData = await pool.query(
+  const reporterData = await dbQuery(
     `
         SELECT * FROM users WHERE id=$1
         
@@ -145,7 +146,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
   ) as JwtPayload;
 
   // 3. Find the user into database
-  const userData = await pool.query(
+  const userData = await dbQuery(
     `
         SELECT * FROM users WHERE id=$1
         
@@ -153,7 +154,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
     [decoded.id],
   );
 
-  const updatedIssue = await pool.query(
+  const updatedIssue = await dbQuery(
     `
             SELECT * FROM issues WHERE id=$1
         `,
@@ -166,7 +167,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
     updatedIssue.rows[0].status === "open" && 
     userData.rows[0].role === "contributor"
   ) {
-    const result = await pool.query(
+    const result = await dbQuery(
       `
             UPDATE  issues 
             SET 
@@ -185,7 +186,7 @@ const updateIssueFromDB = async (id: string, req: Request, res: Response) => {
     userData.rows.length !== 0 &&
     userData.rows[0].role === "maintainer"
   ) {
-    const result = await pool.query(
+    const result = await dbQuery(
       `
             UPDATE  issues 
             SET 
@@ -219,7 +220,7 @@ const deleteIssuesFromDB = async (id: string, req: Request, res: Response) => {
   ) as JwtPayload;
 
   if (decoded.role === "maintainer") {
-    const result = await pool.query(
+    const result = await dbQuery(
       `
         DELETE FROM issues WHERE id=$1
     `,
