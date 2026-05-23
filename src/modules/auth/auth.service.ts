@@ -16,11 +16,13 @@ const loginUserIntoDB = async (payload: {
     `,
     [email],
   );
+  
 
   if (userData.rows.length === 0) {
     throw new Error("Invalid Cridential!");
   }
   const user = userData.rows[0];
+
   const matchPassword = await bcrypt.compare(password, user.password);
   if (!matchPassword) {
     throw new Error("Wrong Password!");
@@ -32,7 +34,7 @@ const loginUserIntoDB = async (payload: {
   const jwtPayload = {
     id: user?.id,
     name: user?.name,
-    email: user?.email,
+    
     role: user?.role
   };
 
@@ -48,7 +50,8 @@ const loginUserIntoDB = async (payload: {
   });
   // console.log(accessToken);
 
-  return { accessToken, refreshToken };
+
+  return { accessToken, refreshToken , user };
 };
 
 const generateRefreshToken = async (token: string) => {
@@ -66,7 +69,7 @@ const generateRefreshToken = async (token: string) => {
     ) as JwtPayload;
 
 
-    // console.log(decoded)
+
 
     // 3. Find the user into database
     const userData = await pool.query(
@@ -76,6 +79,7 @@ const generateRefreshToken = async (token: string) => {
         `,
       [decoded.email],
     );
+    delete userData.rows[0].password ;
 
     const user = userData.rows[0];
 
@@ -90,7 +94,7 @@ const generateRefreshToken = async (token: string) => {
     const jwtPayload = {
       id: user?.id,
       name: user?.name,
-      email: user?.email,
+      
       role: user?.role,
     };
 

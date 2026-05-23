@@ -5,7 +5,7 @@ const loginUser = async (req : Request, res : Response) => {
     try {
         const result = await authService.loginUserIntoDB(req.body);
 
-        const {refreshToken} = result ;
+        const {refreshToken,user,accessToken} = result ;
         res.cookie("refreshToken", refreshToken, {
           secure : false,
           httpOnly : true,
@@ -13,12 +13,21 @@ const loginUser = async (req : Request, res : Response) => {
 
         })
 
+        
+        delete user.password;
+        const resData = {
+          token : result.accessToken,
+          user : user
+
+        }
+
 
 
         res.status(200).json({
-          message: `User login successfully`,
+          success : true,
+          message: `Login successful`,
     
-          data: result,
+          data: resData,
         });
       } catch (error: any) {
         res.status(500).json({
